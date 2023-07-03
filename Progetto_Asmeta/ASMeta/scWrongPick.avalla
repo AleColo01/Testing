@@ -1,0 +1,56 @@
+scenario scWrongPick
+
+load secretCode.asm
+
+exec
+	par
+		input_code(1) := GREEN
+	 	input_code(2) := WHITE
+		input_code(3) := RED
+	endpar
+;
+
+step
+
+check code(1) = GREEN;
+check code(2) = WHITE;
+check code(3) = RED;
+
+exec
+	par
+		input(1) := GREEN
+	 	input(2) := BLACK
+		input(3) := BLUE
+	endpar
+;
+
+step
+
+check results(1) = HIT;
+check results(2) = MISS;
+check results(3) = MISS;
+
+exec
+	par
+		input(1) := RED
+	 	input(2) := BLACK
+		input(3) := BLUE
+	endpar
+;
+
+step
+
+//Questi non li controlla perchè viene violato un invariante...
+//Mi dice comunque che results non è HIT
+check outMess = ALLARME;
+
+check previous(1) = HIT;
+check previous(2) = MISS;
+check previous(3) = MISS;
+
+check results(1) = CLOSE;
+check results(2) = MISS;
+check results(3) = MISS;
+
+step
+

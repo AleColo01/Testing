@@ -1,0 +1,792 @@
+<?xml version="1.0" encoding="UTF-8"?><TestSessionContainer xmlns="http://www.codecover.org/xml/testsession-container" Date="1687624263556" TestSessionContainerId="277f6c3f-29f5-4506-a61a-d5f46061b4ff" version="1.0">
+<SrcFileList>
+<SrcFile Content="&#13;&#10;public class SecretCode {&#13;&#10;&#9;private /*@spec_public@*/ String code[] = new String[5];&#13;&#10;&#9;private /*@spec_public@*/ int points;&#13;&#10;&#9;private /*@spec_public@*/ int turn;&#13;&#10;&#9;private /*@spec_public@*/ boolean previous[]; &#13;&#10;&#9;private /*@spec_public@*/ int results[] = new int[5]; //-1 miss, 0 close, 1 hit &#13;&#10;&#9;public boolean endGame = false;&#13;&#10;&#9;&#13;&#10;&#9;//i turni devono essere compresi tra 0 e 10&#13;&#10;&#9;//@ public invariant turn &gt;=0 &amp;&amp; turn &lt;=10;&#13;&#10;&#9;&#13;&#10;&#9;//ogni pezzo di codice è composto da una e una sola lettera&#13;&#10;&#9;//@ public invariant (\forall int x; x&lt;5 &amp;&amp; x&gt;=0; (code[x].length())== 1); &#13;&#10;&#9;&#13;&#10;&#9;&#13;&#10;&#9;&#13;&#10;&#9;//il codice non può essere vuoto&#13;&#10;&#9;//@ requires c!=null;&#13;&#10;&#9;// il codice deve essere lungo 5&#13;&#10;&#9;//@ requires c.length == 5;&#13;&#10;&#9;// inizialmente i controlli sono settati a falso&#13;&#10;&#9;//@ ensures (\forall int x; x&lt;5 &amp;&amp; x&gt;=0; previous[x]==false);&#13;&#10;&#9;//il codice segreto viene impostato uguale all'input&#13;&#10;&#9;//@ ensures code == c;&#13;&#10;&#9;public SecretCode(String c[]) {&#13;&#10;&#9;&#9;previous = new boolean[]{false,false,false,false,false};&#13;&#10;&#9;&#9;code = c;&#13;&#10;&#9;&#9;points = 0;&#13;&#10;&#9;&#9;turn = 1;&#13;&#10;&#9;}&#13;&#10;&#9;&#13;&#10;&#9;&#13;&#10;&#9;// la lunghezza del tentativo deve essere 5&#13;&#10;&#9;//@ requires c.length == 5;&#13;&#10;&#9;// ogni parte di codice non deve essere nulla e lunga 1&#13;&#10;&#9;//@ requires (\forall int x; x&lt;5 &amp;&amp; x&gt;=0; (c[x].length())== 1 &amp;&amp; c[x]!=null);&#13;&#10;&#9;// se al turno precedente ho indovinato un pezzo, devo mantenere quel risultato&#13;&#10;&#9;//@ requires isCodeValid(c);&#13;&#10;&#9;// se ho indovinato il codice, ritorna vero, altrimenti, ritorna falso&#13;&#10;&#9;//@ ensures (code==c) &lt;==&gt; \result;&#13;&#10;&#9;//@ ensures (code!=c) &lt;==&gt; !\result;&#13;&#10;&#9;// se il turno è maggiore o uguale a 10 torna falso, ma se è falso non vuol dire che il turno sia &gt;=10&#13;&#10;&#9;//@ ensures (turn&gt;=10) ==&gt; !\result;&#13;&#10;&#9;// i punti vengono assegnati correttamente&#13;&#10;&#9;//@ ensures (turn&lt;10 &amp;&amp; isCodeValid(c)) ==&gt; (points == \old(points) + guessPoints(c));&#13;&#10;&#9;//@ diverges true;&#13;&#10;&#9;public boolean guessCode(String c[]) {&#13;&#10;&#9;&#9;&#13;&#10;&#9;&#9;boolean end = endGame;&#13;&#10;&#9;&#9;if(turn &lt; 10 &amp;&amp; isCodeValid(c) &amp;&amp; !endGame) {&#13;&#10;&#9;&#9;&#9;&#13;&#10;&#9;&#9;&#9;//@ loop_invariant code[i]!=null;&#13;&#10;&#9;&#9;&#9;for(int i=0; i&lt; code.length ;i++) {&#13;&#10;&#9;&#9;&#9;&#9;if(code[i].equals(c[i])==false) {&#13;&#10;&#9;&#9;&#9;&#9;&#9;end = false;&#13;&#10;&#9;&#9;&#9;&#9;&#9;break;&#13;&#10;&#9;&#9;&#9;&#9;}else {&#13;&#10;&#9;&#9;&#9;&#9;&#9;end= true;&#13;&#10;&#9;&#9;&#9;&#9;&#9;EndGame = true;&#13;&#10;&#9;&#9;&#9;&#9;}&#9;&#13;&#10;&#9;&#9;&#9;}&#13;&#10;&#9;&#9;&#9;points += guessPoints(c);&#13;&#10;&#9;&#9;&#9;turn++;&#13;&#10;&#9;&#9;&#9;//@ assert turn &lt;= 10;&#13;&#10;&#9;&#9;}&#13;&#10;&#9;&#13;&#10;&#9;&#9;return end;&#13;&#10;&#9;&#9;&#13;&#10;&#9;}&#13;&#10;&#9;&#13;&#10;&#9;// la lunghezza del tentativo deve essere 5&#13;&#10;&#9;//@ requires c.length == 5;&#13;&#10;&#9;// ogni parte di codice non deve essere nulla e lunga 1&#13;&#10;&#9;//@ requires (\forall int x; x&lt;5 &amp;&amp; x&gt;=0; (c[x].length())== 1 &amp;&amp; c[x]!=null);&#13;&#10;&#9;// controllo che il risultato rispecchi la regola di correttezza&#13;&#10;&#9;//@ ensures \result &lt;==&gt; (\forall int x; x&lt;5 &amp;&amp; x&gt;=0; code[x].equals(c[x]) || !previous[x]);&#13;&#10;&#9;//@ ensures !\result &lt;==&gt; (\exists int x; x&lt;5 &amp;&amp; x&gt;=0; !(code[x].equals(c[x])) || previous[x]);&#13;&#10;&#9;//@ diverges true;&#13;&#10;&#9;private /*@ pure spec_public @*/boolean isCodeValid(String c[]) {&#13;&#10;&#9;&#9;&#13;&#10;&#9;&#9;boolean flag = false;&#13;&#10;&#9;&#9;&#13;&#10;&#9;&#9;//@ loop_invariant code[i]!=null;&#13;&#10;&#9;&#9;for(int i=0; i&lt; code.length ;i++) {&#13;&#10;&#9;&#9;&#9;if(code[i].equals(c[i])==false &amp;&amp; previous[i]==true) {&#13;&#10;&#9;&#9;&#9;&#9;flag = false;&#13;&#10;&#9;&#9;&#9;&#9;break;&#13;&#10;&#9;&#9;&#9;}else {&#13;&#10;&#9;&#9;&#9;&#9;flag= true;&#13;&#10;&#9;&#9;&#9;}&#9;&#13;&#10;&#9;&#9;}&#9;&#9;&#13;&#10;&#9;&#9;&#13;&#10;&#9;&#9;return flag;&#13;&#10;&#9;}&#13;&#10;&#9;&#13;&#10;&#9;// la lunghezza del tentativo deve essere 5&#13;&#10;&#9;//@ requires c.length == 5;&#13;&#10;&#9;// ogni parte di codice non deve essere nulla e lunga 1&#13;&#10;&#9;//@ requires (\forall int x; x&lt;5 &amp;&amp; x&gt;=0; (c[x].length())== 1 &amp;&amp; c[x]!=null);&#13;&#10;&#9;// se ho fatto tutto giusto, devo aver guadagnato 10*turn punti&#13;&#10;&#9;//@ ensures  (\forall int x; x&lt;5 &amp;&amp; x&gt;=0; code[x].equals(c[x])) &lt;==&gt; \result==10*turn;&#13;&#10;&#9;// se ho fatto qualcosa di sbagliato, devo aver guadagnato meno di 10*turn punti&#13;&#10;&#9;//@ ensures  (\exists int x; x&lt;5 &amp;&amp; x&gt;=0; !(code[x].equals(c[x]))) &lt;==&gt; \result&lt;=10*turn;&#13;&#10;&#9;//@ diverges true;&#13;&#10;&#9;private /*@ pure spec_public @*/ int guessPoints(String c[]) {&#13;&#10;&#9;&#9;&#13;&#10;&#9;&#9;int p = 0;&#13;&#10;&#9;&#9;&#13;&#10;&#9;&#9;//@ loop_invariant code[i]!=null;&#13;&#10;&#9;&#9;for(int i=0; i&lt; code.length ;i++) {&#13;&#10;&#9;&#9;&#9;if(code[i].equals(c[i])) {&#13;&#10;&#9;&#9;&#9;&#9;previous[i] = true;&#13;&#10;&#9;&#9;&#9;&#9;p += 2*turn;&#13;&#10;&#9;&#9;&#9;&#9;results[i] = 1;&#13;&#10;&#9;&#9;&#9;}else if( isLetterinCode(c[i])){&#13;&#10;&#9;&#9;&#9;&#9;previous[i] = false;&#13;&#10;&#9;&#9;&#9;&#9;p += 1*turn;&#13;&#10;&#9;&#9;&#9;&#9;results[i] = 0;&#13;&#10;&#9;&#9;&#9;}else {&#13;&#10;&#9;&#9;&#9;&#9;previous[i] = false;&#13;&#10;&#9;&#9;&#9;&#9;p -= 2*turn;&#13;&#10;&#9;&#9;&#9;&#9;results[i] = -1;&#13;&#10;&#9;&#9;&#9;}&#13;&#10;&#9;&#9;}&#13;&#10;&#9;&#9;return p;&#13;&#10;&#9;}&#13;&#10;&#9;&#13;&#10;&#9;//puoi prendere solo una lettera come input&#13;&#10;&#9;//@ requires l!=null &amp;&amp; l.length() == 1 ;&#13;&#10;&#9;// se esiste una pezzo di codice uguale alla lettera, ritorna vero&#13;&#10;&#9;//@ ensures  (\exists int x; x&lt;5 &amp;&amp; x&gt;=0; code[x].equals(l)) &lt;==&gt; \result;&#13;&#10;&#9;// se non esiste una pezzo di codice uguale alla lettera, ritorna falso&#13;&#10;&#9;//@ ensures  (\forall int x; x&lt;5 &amp;&amp; x&gt;=0; !(code[x].equals(l))) &lt;==&gt; !\result;&#13;&#10;&#9;//@ diverges true;&#13;&#10;&#9;private boolean isLetterinCode(String l) {&#13;&#10;&#9;&#9;&#13;&#10;&#9;&#9;boolean flag = false;&#13;&#10;&#9;&#9;&#13;&#10;&#9;&#9;//@ loop_invariant code[i]!=null;&#13;&#10;&#9;&#9;for(int i=0; i&lt; code.length ;i++) {&#13;&#10;&#9;&#9;&#9;if(code[i]==l) {&#13;&#10;&#9;&#9;&#9;&#9;flag = true;&#13;&#10;&#9;&#9;&#9;&#9;break;&#13;&#10;&#9;&#9;&#9;}else {&#13;&#10;&#9;&#9;&#9;&#9;flag= false;&#13;&#10;&#9;&#9;&#9;}&#9;&#13;&#10;&#9;&#9;}&#13;&#10;&#9;&#9;return flag;&#13;&#10;&#9;}&#13;&#10;&#9;&#13;&#10;&#9;//@ requires true;&#13;&#10;&#9;//@ ensures  \result == points ;&#13;&#10;&#9;public int getPoints() {&#13;&#10;&#9;&#9;return points;&#13;&#10;&#9;}&#13;&#10;&#9;&#13;&#10;&#9;// non lo posso lanciare prima del primo turno perchè non avrei nessuna risposta&#13;&#10;&#9;//@ requires turn&gt;=2;&#13;&#10;&#9;//@ ensures \result.length == 5;&#13;&#10;&#9;public String[] getResults() {&#13;&#10;&#9;&#9;String[] s = new String[5];&#13;&#10;&#9;&#9;// @ loop_writes i, a[*];&#13;&#10;&#9;&#9;for(int i=0;i&lt;5;i++) {&#13;&#10;&#9;&#9;&#9;if(results[i]==1) s[i]=&quot;Hit&quot;;&#13;&#10;&#9;&#9;&#9;else if(results[i]==0) s[i]=&quot;Close&quot;;&#13;&#10;&#9;&#9;&#9;else s[i]=&quot;Miss&quot;;&#13;&#10;&#9;&#9;}&#13;&#10;&#9;&#9;return s;&#13;&#10;&#9;}&#13;&#10;&#9;&#13;&#10;}&#13;&#10;" Filename="SecretCode.java" Intrnl_Id="1"/>
+</SrcFileList>
+<CritList>
+<CritListEntry Name="org.codecover.model.utils.criteria.ConditionCoverage" PluginName="org.codecover"/>
+<CritListEntry Name="org.codecover.model.utils.criteria.BranchCoverage" PluginName="org.codecover"/>
+<CritListEntry Name="org.codecover.model.utils.criteria.StatementCoverage" PluginName="org.codecover"/>
+</CritList>
+<BoolOpList>
+<BoolOp Arity="2" Intrnl_Id="2" Name="conditional and (&amp;&amp;)">
+<BoolAssgnmntBoolMapList>
+<MapEntry BoolAssgnmnt="02" Value="false"/>
+<MapEntry BoolAssgnmnt="10" Value="false"/>
+<MapEntry BoolAssgnmnt="11" Value="true"/>
+</BoolAssgnmntBoolMapList>
+</BoolOp>
+<BoolOp Arity="1" Intrnl_Id="3" Name="not (!)">
+<BoolAssgnmntBoolMapList>
+<MapEntry BoolAssgnmnt="1" Value="false"/>
+<MapEntry BoolAssgnmnt="0" Value="true"/>
+</BoolAssgnmntBoolMapList>
+</BoolOp>
+</BoolOpList>
+<HierarchyLvlTypeList>
+<HierarchyLvlType EnglishName="method" IntrnlName="method" Intrnl_Id="4"/>
+<HierarchyLvlType EnglishName="class" IntrnlName="class" Intrnl_Id="5"/>
+<HierarchyLvlType EnglishName="default package" IntrnlName="default package" Intrnl_Id="6"/>
+</HierarchyLvlTypeList>
+<MASTRoot>
+<HierarchyLvl HierarchyLvlId="882" HierarchyLvlTypeId="6" Intrnl_Id="7" Name="default package">
+<Header/>
+<LocList/>
+<HierarchyLvl HierarchyLvlId="881" HierarchyLvlTypeId="5" Intrnl_Id="8" Name="SecretCode">
+<Header>
+<Loc EndOffset="25" SrcFileId="1" StartOffset="2"/>
+</Header>
+<LocList>
+<Loc EndOffset="5302" SrcFileId="1" StartOffset="2"/>
+</LocList>
+<StmntSeq Intrnl_Id="9">
+<LocList>
+<Loc EndOffset="86" SrcFileId="1" StartOffset="30"/>
+<Loc EndOffset="269" SrcFileId="1" StartOffset="216"/>
+<Loc EndOffset="330" SrcFileId="1" StartOffset="299"/>
+</LocList>
+<BasicStmnt CovItemId="S1" CovItemPrefix="SecretCode.java" Intrnl_Id="10">
+<LocList>
+<Loc EndOffset="86" SrcFileId="1" StartOffset="30"/>
+</LocList>
+</BasicStmnt>
+<BasicStmnt CovItemId="S2" CovItemPrefix="SecretCode.java" Intrnl_Id="11">
+<LocList>
+<Loc EndOffset="269" SrcFileId="1" StartOffset="216"/>
+</LocList>
+</BasicStmnt>
+<BasicStmnt CovItemId="S3" CovItemPrefix="SecretCode.java" Intrnl_Id="12">
+<LocList>
+<Loc EndOffset="330" SrcFileId="1" StartOffset="299"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+<HierarchyLvl HierarchyLvlId="874" HierarchyLvlTypeId="4" Intrnl_Id="13" Name="SecretCode">
+<Header>
+<Loc EndOffset="928" SrcFileId="1" StartOffset="899"/>
+</Header>
+<LocList>
+<Loc EndOffset="1035" SrcFileId="1" StartOffset="899"/>
+</LocList>
+<StmntSeq Intrnl_Id="14">
+<LocList>
+<Loc EndOffset="990" SrcFileId="1" StartOffset="934"/>
+<Loc EndOffset="1003" SrcFileId="1" StartOffset="994"/>
+<Loc EndOffset="1018" SrcFileId="1" StartOffset="1007"/>
+<Loc EndOffset="1031" SrcFileId="1" StartOffset="1022"/>
+</LocList>
+<BasicStmnt CovItemId="S4" CovItemPrefix="SecretCode.java" Intrnl_Id="15">
+<LocList>
+<Loc EndOffset="990" SrcFileId="1" StartOffset="934"/>
+</LocList>
+</BasicStmnt>
+<BasicStmnt CovItemId="S5" CovItemPrefix="SecretCode.java" Intrnl_Id="16">
+<LocList>
+<Loc EndOffset="1003" SrcFileId="1" StartOffset="994"/>
+</LocList>
+</BasicStmnt>
+<BasicStmnt CovItemId="S6" CovItemPrefix="SecretCode.java" Intrnl_Id="17">
+<LocList>
+<Loc EndOffset="1018" SrcFileId="1" StartOffset="1007"/>
+</LocList>
+</BasicStmnt>
+<BasicStmnt CovItemId="S7" CovItemPrefix="SecretCode.java" Intrnl_Id="18">
+<LocList>
+<Loc EndOffset="1031" SrcFileId="1" StartOffset="1022"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</HierarchyLvl>
+<HierarchyLvl HierarchyLvlId="875" HierarchyLvlTypeId="4" Intrnl_Id="19" Name="guessCode">
+<Header>
+<Loc EndOffset="1856" SrcFileId="1" StartOffset="1820"/>
+</Header>
+<LocList>
+<Loc EndOffset="2257" SrcFileId="1" StartOffset="1820"/>
+</LocList>
+<StmntSeq Intrnl_Id="20">
+<LocList>
+<Loc EndOffset="1888" SrcFileId="1" StartOffset="1866"/>
+<Loc EndOffset="2231" SrcFileId="1" StartOffset="1892"/>
+<Loc EndOffset="2249" SrcFileId="1" StartOffset="2238"/>
+</LocList>
+<BasicStmnt CovItemId="S8" CovItemPrefix="SecretCode.java" Intrnl_Id="21">
+<LocList>
+<Loc EndOffset="1888" SrcFileId="1" StartOffset="1866"/>
+</LocList>
+</BasicStmnt>
+<CondStmnt CovItemId="S9" CovItemPrefix="SecretCode.java" Intrnl_Id="22">
+<Branch CovItemId="B1" CovItemPrefix="SecretCode.java" Implct="false" Intrnl_Id="23">
+<Cond/>
+<LocList>
+<Loc EndOffset="2231" SrcFileId="1" StartOffset="1936"/>
+</LocList>
+<StmntSeq Intrnl_Id="24">
+<LocList>
+<Loc EndOffset="2157" SrcFileId="1" StartOffset="1985"/>
+<Loc EndOffset="2187" SrcFileId="1" StartOffset="2162"/>
+<Loc EndOffset="2199" SrcFileId="1" StartOffset="2192"/>
+</LocList>
+<LoopStmnt CovItemId="S10" CovItemPrefix="SecretCode.java" Intrnl_Id="25" MltplExecId="L1-2" MltplExecPrefix="SecretCode.java" NvrExecId="L1-0" NvrExecPrefix="SecretCode.java" OnceExecutedId="L1-1" OnceExecutedPrefix="SecretCode.java" OptBodyExec="true">
+<StmntSeq Intrnl_Id="26">
+<LocList>
+<Loc EndOffset="2150" SrcFileId="1" StartOffset="2026"/>
+</LocList>
+<CondStmnt CovItemId="S11" CovItemPrefix="SecretCode.java" Intrnl_Id="27">
+<Branch CovItemId="B3" CovItemPrefix="SecretCode.java" Implct="false" Intrnl_Id="28">
+<Cond/>
+<LocList>
+<Loc EndOffset="2098" SrcFileId="1" StartOffset="2058"/>
+</LocList>
+<StmntSeq Intrnl_Id="29">
+<LocList>
+<Loc EndOffset="2078" SrcFileId="1" StartOffset="2066"/>
+<Loc EndOffset="2091" SrcFileId="1" StartOffset="2085"/>
+</LocList>
+<BasicStmnt CovItemId="S12" CovItemPrefix="SecretCode.java" Intrnl_Id="30">
+<LocList>
+<Loc EndOffset="2078" SrcFileId="1" StartOffset="2066"/>
+</LocList>
+</BasicStmnt>
+<BasicStmnt CovItemId="S13" CovItemPrefix="SecretCode.java" Intrnl_Id="31">
+<LocList>
+<Loc EndOffset="2091" SrcFileId="1" StartOffset="2085"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</Branch>
+<Branch CovItemId="B4" CovItemPrefix="SecretCode.java" Implct="false" Intrnl_Id="32">
+<Cond>
+<Loc EndOffset="2102" SrcFileId="1" StartOffset="2098"/>
+</Cond>
+<LocList>
+<Loc EndOffset="2150" SrcFileId="1" StartOffset="2103"/>
+</LocList>
+<StmntSeq Intrnl_Id="33">
+<LocList>
+<Loc EndOffset="2121" SrcFileId="1" StartOffset="2111"/>
+<Loc EndOffset="2143" SrcFileId="1" StartOffset="2128"/>
+</LocList>
+<BasicStmnt CovItemId="S14" CovItemPrefix="SecretCode.java" Intrnl_Id="34">
+<LocList>
+<Loc EndOffset="2121" SrcFileId="1" StartOffset="2111"/>
+</LocList>
+</BasicStmnt>
+<BasicStmnt CovItemId="S15" CovItemPrefix="SecretCode.java" Intrnl_Id="35">
+<LocList>
+<Loc EndOffset="2143" SrcFileId="1" StartOffset="2128"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</Branch>
+<Keyword EndOffset="2028" SrcFileId="1" StartOffset="2026"/>
+<LocList>
+<Loc EndOffset="2150" SrcFileId="1" StartOffset="2026"/>
+</LocList>
+<RootTerm CovItemId="C3" CovItemPrefix="SecretCode.java" Intrnl_Id="36">
+<BasicBoolTerm Intrnl_Id="37">
+<LocList>
+<Loc EndOffset="2056" SrcFileId="1" StartOffset="2029"/>
+</LocList>
+</BasicBoolTerm>
+</RootTerm>
+</CondStmnt>
+</StmntSeq>
+<Keyword EndOffset="1988" SrcFileId="1" StartOffset="1985"/>
+<LocList>
+<Loc EndOffset="2157" SrcFileId="1" StartOffset="1985"/>
+</LocList>
+<RootTerm CovItemId="C2" CovItemPrefix="SecretCode.java" Intrnl_Id="38">
+<BasicBoolTerm Intrnl_Id="39">
+<LocList>
+<Loc EndOffset="2012" SrcFileId="1" StartOffset="1998"/>
+</LocList>
+</BasicBoolTerm>
+</RootTerm>
+</LoopStmnt>
+<BasicStmnt CovItemId="S16" CovItemPrefix="SecretCode.java" Intrnl_Id="40">
+<LocList>
+<Loc EndOffset="2187" SrcFileId="1" StartOffset="2162"/>
+</LocList>
+</BasicStmnt>
+<BasicStmnt CovItemId="S17" CovItemPrefix="SecretCode.java" Intrnl_Id="41">
+<LocList>
+<Loc EndOffset="2199" SrcFileId="1" StartOffset="2192"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</Branch>
+<Branch CovItemId="B2" CovItemPrefix="SecretCode.java" Implct="true" Intrnl_Id="42">
+<Cond/>
+<LocList/>
+<StmntSeq Intrnl_Id="43">
+<LocList/>
+</StmntSeq>
+</Branch>
+<Keyword EndOffset="1894" SrcFileId="1" StartOffset="1892"/>
+<LocList>
+<Loc EndOffset="2231" SrcFileId="1" StartOffset="1892"/>
+</LocList>
+<RootTerm CovItemId="C1" CovItemPrefix="SecretCode.java" Intrnl_Id="44">
+<OpTerm BooleanOpId="2" Intrnl_Id="45">
+<OpTerm BooleanOpId="2" Intrnl_Id="46">
+<BasicBoolTerm Intrnl_Id="47">
+<LocList>
+<Loc EndOffset="1904" SrcFileId="1" StartOffset="1895"/>
+</LocList>
+</BasicBoolTerm>
+<BasicBoolTerm Intrnl_Id="48">
+<LocList>
+<Loc EndOffset="1922" SrcFileId="1" StartOffset="1908"/>
+</LocList>
+</BasicBoolTerm>
+<LocList>
+<Loc EndOffset="1907" SrcFileId="1" StartOffset="1905"/>
+</LocList>
+</OpTerm>
+<OpTerm BooleanOpId="3" Intrnl_Id="49">
+<BasicBoolTerm Intrnl_Id="50">
+<LocList>
+<Loc EndOffset="1934" SrcFileId="1" StartOffset="1927"/>
+</LocList>
+</BasicBoolTerm>
+<LocList>
+<Loc EndOffset="1927" SrcFileId="1" StartOffset="1926"/>
+</LocList>
+</OpTerm>
+<LocList>
+<Loc EndOffset="1925" SrcFileId="1" StartOffset="1923"/>
+</LocList>
+</OpTerm>
+</RootTerm>
+</CondStmnt>
+<BasicStmnt CovItemId="S18" CovItemPrefix="SecretCode.java" Intrnl_Id="51">
+<LocList>
+<Loc EndOffset="2249" SrcFileId="1" StartOffset="2238"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</HierarchyLvl>
+<HierarchyLvl HierarchyLvlId="876" HierarchyLvlTypeId="4" Intrnl_Id="52" Name="isCodeValid">
+<Header>
+<Loc EndOffset="2821" SrcFileId="1" StartOffset="2758"/>
+</Header>
+<LocList>
+<Loc EndOffset="3089" SrcFileId="1" StartOffset="2758"/>
+</LocList>
+<StmntSeq Intrnl_Id="53">
+<LocList>
+<Loc EndOffset="2852" SrcFileId="1" StartOffset="2831"/>
+<Loc EndOffset="3063" SrcFileId="1" StartOffset="2897"/>
+<Loc EndOffset="3085" SrcFileId="1" StartOffset="3073"/>
+</LocList>
+<BasicStmnt CovItemId="S19" CovItemPrefix="SecretCode.java" Intrnl_Id="54">
+<LocList>
+<Loc EndOffset="2852" SrcFileId="1" StartOffset="2831"/>
+</LocList>
+</BasicStmnt>
+<LoopStmnt CovItemId="S20" CovItemPrefix="SecretCode.java" Intrnl_Id="55" MltplExecId="L2-2" MltplExecPrefix="SecretCode.java" NvrExecId="L2-0" NvrExecPrefix="SecretCode.java" OnceExecutedId="L2-1" OnceExecutedPrefix="SecretCode.java" OptBodyExec="true">
+<StmntSeq Intrnl_Id="56">
+<LocList>
+<Loc EndOffset="3057" SrcFileId="1" StartOffset="2937"/>
+</LocList>
+<CondStmnt CovItemId="S21" CovItemPrefix="SecretCode.java" Intrnl_Id="57">
+<Branch CovItemId="B5" CovItemPrefix="SecretCode.java" Implct="false" Intrnl_Id="58">
+<Cond/>
+<LocList>
+<Loc EndOffset="3028" SrcFileId="1" StartOffset="2990"/>
+</LocList>
+<StmntSeq Intrnl_Id="59">
+<LocList>
+<Loc EndOffset="3010" SrcFileId="1" StartOffset="2997"/>
+<Loc EndOffset="3022" SrcFileId="1" StartOffset="3016"/>
+</LocList>
+<BasicStmnt CovItemId="S22" CovItemPrefix="SecretCode.java" Intrnl_Id="60">
+<LocList>
+<Loc EndOffset="3010" SrcFileId="1" StartOffset="2997"/>
+</LocList>
+</BasicStmnt>
+<BasicStmnt CovItemId="S23" CovItemPrefix="SecretCode.java" Intrnl_Id="61">
+<LocList>
+<Loc EndOffset="3022" SrcFileId="1" StartOffset="3016"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</Branch>
+<Branch CovItemId="B6" CovItemPrefix="SecretCode.java" Implct="false" Intrnl_Id="62">
+<Cond>
+<Loc EndOffset="3032" SrcFileId="1" StartOffset="3028"/>
+</Cond>
+<LocList>
+<Loc EndOffset="3057" SrcFileId="1" StartOffset="3033"/>
+</LocList>
+<StmntSeq Intrnl_Id="63">
+<LocList>
+<Loc EndOffset="3051" SrcFileId="1" StartOffset="3040"/>
+</LocList>
+<BasicStmnt CovItemId="S24" CovItemPrefix="SecretCode.java" Intrnl_Id="64">
+<LocList>
+<Loc EndOffset="3051" SrcFileId="1" StartOffset="3040"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</Branch>
+<Keyword EndOffset="2939" SrcFileId="1" StartOffset="2937"/>
+<LocList>
+<Loc EndOffset="3057" SrcFileId="1" StartOffset="2937"/>
+</LocList>
+<RootTerm CovItemId="C5" CovItemPrefix="SecretCode.java" Intrnl_Id="65">
+<OpTerm BooleanOpId="2" Intrnl_Id="66">
+<BasicBoolTerm Intrnl_Id="67">
+<LocList>
+<Loc EndOffset="2967" SrcFileId="1" StartOffset="2940"/>
+</LocList>
+</BasicBoolTerm>
+<BasicBoolTerm Intrnl_Id="68">
+<LocList>
+<Loc EndOffset="2988" SrcFileId="1" StartOffset="2971"/>
+</LocList>
+</BasicBoolTerm>
+<LocList>
+<Loc EndOffset="2970" SrcFileId="1" StartOffset="2968"/>
+</LocList>
+</OpTerm>
+</RootTerm>
+</CondStmnt>
+</StmntSeq>
+<Keyword EndOffset="2900" SrcFileId="1" StartOffset="2897"/>
+<LocList>
+<Loc EndOffset="3063" SrcFileId="1" StartOffset="2897"/>
+</LocList>
+<RootTerm CovItemId="C4" CovItemPrefix="SecretCode.java" Intrnl_Id="69">
+<BasicBoolTerm Intrnl_Id="70">
+<LocList>
+<Loc EndOffset="2924" SrcFileId="1" StartOffset="2910"/>
+</LocList>
+</BasicBoolTerm>
+</RootTerm>
+</LoopStmnt>
+<BasicStmnt CovItemId="S25" CovItemPrefix="SecretCode.java" Intrnl_Id="71">
+<LocList>
+<Loc EndOffset="3085" SrcFileId="1" StartOffset="3073"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</HierarchyLvl>
+<HierarchyLvl HierarchyLvlId="877" HierarchyLvlTypeId="4" Intrnl_Id="72" Name="guessPoints">
+<Header>
+<Loc EndOffset="3720" SrcFileId="1" StartOffset="3660"/>
+</Header>
+<LocList>
+<Loc EndOffset="4123" SrcFileId="1" StartOffset="3660"/>
+</LocList>
+<StmntSeq Intrnl_Id="73">
+<LocList>
+<Loc EndOffset="3740" SrcFileId="1" StartOffset="3730"/>
+<Loc EndOffset="4106" SrcFileId="1" StartOffset="3785"/>
+<Loc EndOffset="4119" SrcFileId="1" StartOffset="4110"/>
+</LocList>
+<BasicStmnt CovItemId="S26" CovItemPrefix="SecretCode.java" Intrnl_Id="74">
+<LocList>
+<Loc EndOffset="3740" SrcFileId="1" StartOffset="3730"/>
+</LocList>
+</BasicStmnt>
+<LoopStmnt CovItemId="S27" CovItemPrefix="SecretCode.java" Intrnl_Id="75" MltplExecId="L3-2" MltplExecPrefix="SecretCode.java" NvrExecId="L3-0" NvrExecPrefix="SecretCode.java" OnceExecutedId="L3-1" OnceExecutedPrefix="SecretCode.java" OptBodyExec="true">
+<StmntSeq Intrnl_Id="76">
+<LocList>
+<Loc EndOffset="4101" SrcFileId="1" StartOffset="3825"/>
+</LocList>
+<CondStmnt CovItemId="S28" CovItemPrefix="SecretCode.java" Intrnl_Id="77">
+<Branch CovItemId="B7" CovItemPrefix="SecretCode.java" Implct="false" Intrnl_Id="78">
+<Cond/>
+<LocList>
+<Loc EndOffset="3921" SrcFileId="1" StartOffset="3850"/>
+</LocList>
+<StmntSeq Intrnl_Id="79">
+<LocList>
+<Loc EndOffset="3876" SrcFileId="1" StartOffset="3857"/>
+<Loc EndOffset="3894" SrcFileId="1" StartOffset="3882"/>
+<Loc EndOffset="3915" SrcFileId="1" StartOffset="3900"/>
+</LocList>
+<BasicStmnt CovItemId="S29" CovItemPrefix="SecretCode.java" Intrnl_Id="80">
+<LocList>
+<Loc EndOffset="3876" SrcFileId="1" StartOffset="3857"/>
+</LocList>
+</BasicStmnt>
+<BasicStmnt CovItemId="S30" CovItemPrefix="SecretCode.java" Intrnl_Id="81">
+<LocList>
+<Loc EndOffset="3894" SrcFileId="1" StartOffset="3882"/>
+</LocList>
+</BasicStmnt>
+<BasicStmnt CovItemId="S31" CovItemPrefix="SecretCode.java" Intrnl_Id="82">
+<LocList>
+<Loc EndOffset="3915" SrcFileId="1" StartOffset="3900"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</Branch>
+<Branch CovItemId="B8" CovItemPrefix="SecretCode.java" Implct="false" Intrnl_Id="83">
+<Cond>
+<Loc EndOffset="3925" SrcFileId="1" StartOffset="3921"/>
+</Cond>
+<LocList>
+<Loc EndOffset="4101" SrcFileId="1" StartOffset="3926"/>
+</LocList>
+<StmntSeq Intrnl_Id="84">
+<LocList>
+<Loc EndOffset="4101" SrcFileId="1" StartOffset="3926"/>
+</LocList>
+<CondStmnt CovItemId="S32" CovItemPrefix="SecretCode.java" Intrnl_Id="85">
+<Branch CovItemId="B9" CovItemPrefix="SecretCode.java" Implct="false" Intrnl_Id="86">
+<Cond/>
+<LocList>
+<Loc EndOffset="4023" SrcFileId="1" StartOffset="3951"/>
+</LocList>
+<StmntSeq Intrnl_Id="87">
+<LocList>
+<Loc EndOffset="3978" SrcFileId="1" StartOffset="3958"/>
+<Loc EndOffset="3996" SrcFileId="1" StartOffset="3984"/>
+<Loc EndOffset="4017" SrcFileId="1" StartOffset="4002"/>
+</LocList>
+<BasicStmnt CovItemId="S33" CovItemPrefix="SecretCode.java" Intrnl_Id="88">
+<LocList>
+<Loc EndOffset="3978" SrcFileId="1" StartOffset="3958"/>
+</LocList>
+</BasicStmnt>
+<BasicStmnt CovItemId="S34" CovItemPrefix="SecretCode.java" Intrnl_Id="89">
+<LocList>
+<Loc EndOffset="3996" SrcFileId="1" StartOffset="3984"/>
+</LocList>
+</BasicStmnt>
+<BasicStmnt CovItemId="S35" CovItemPrefix="SecretCode.java" Intrnl_Id="90">
+<LocList>
+<Loc EndOffset="4017" SrcFileId="1" StartOffset="4002"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</Branch>
+<Branch CovItemId="B10" CovItemPrefix="SecretCode.java" Implct="false" Intrnl_Id="91">
+<Cond>
+<Loc EndOffset="4027" SrcFileId="1" StartOffset="4023"/>
+</Cond>
+<LocList>
+<Loc EndOffset="4101" SrcFileId="1" StartOffset="4028"/>
+</LocList>
+<StmntSeq Intrnl_Id="92">
+<LocList>
+<Loc EndOffset="4055" SrcFileId="1" StartOffset="4035"/>
+<Loc EndOffset="4073" SrcFileId="1" StartOffset="4061"/>
+<Loc EndOffset="4095" SrcFileId="1" StartOffset="4079"/>
+</LocList>
+<BasicStmnt CovItemId="S36" CovItemPrefix="SecretCode.java" Intrnl_Id="93">
+<LocList>
+<Loc EndOffset="4055" SrcFileId="1" StartOffset="4035"/>
+</LocList>
+</BasicStmnt>
+<BasicStmnt CovItemId="S37" CovItemPrefix="SecretCode.java" Intrnl_Id="94">
+<LocList>
+<Loc EndOffset="4073" SrcFileId="1" StartOffset="4061"/>
+</LocList>
+</BasicStmnt>
+<BasicStmnt CovItemId="S38" CovItemPrefix="SecretCode.java" Intrnl_Id="95">
+<LocList>
+<Loc EndOffset="4095" SrcFileId="1" StartOffset="4079"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</Branch>
+<Keyword EndOffset="3928" SrcFileId="1" StartOffset="3926"/>
+<LocList>
+<Loc EndOffset="4101" SrcFileId="1" StartOffset="3926"/>
+</LocList>
+<RootTerm CovItemId="C8" CovItemPrefix="SecretCode.java" Intrnl_Id="96">
+<BasicBoolTerm Intrnl_Id="97">
+<LocList>
+<Loc EndOffset="3950" SrcFileId="1" StartOffset="3930"/>
+</LocList>
+</BasicBoolTerm>
+</RootTerm>
+</CondStmnt>
+</StmntSeq>
+</Branch>
+<Keyword EndOffset="3827" SrcFileId="1" StartOffset="3825"/>
+<LocList>
+<Loc EndOffset="4101" SrcFileId="1" StartOffset="3825"/>
+</LocList>
+<RootTerm CovItemId="C7" CovItemPrefix="SecretCode.java" Intrnl_Id="98">
+<BasicBoolTerm Intrnl_Id="99">
+<LocList>
+<Loc EndOffset="3848" SrcFileId="1" StartOffset="3828"/>
+</LocList>
+</BasicBoolTerm>
+</RootTerm>
+</CondStmnt>
+</StmntSeq>
+<Keyword EndOffset="3788" SrcFileId="1" StartOffset="3785"/>
+<LocList>
+<Loc EndOffset="4106" SrcFileId="1" StartOffset="3785"/>
+</LocList>
+<RootTerm CovItemId="C6" CovItemPrefix="SecretCode.java" Intrnl_Id="100">
+<BasicBoolTerm Intrnl_Id="101">
+<LocList>
+<Loc EndOffset="3812" SrcFileId="1" StartOffset="3798"/>
+</LocList>
+</BasicBoolTerm>
+</RootTerm>
+</LoopStmnt>
+<BasicStmnt CovItemId="S39" CovItemPrefix="SecretCode.java" Intrnl_Id="102">
+<LocList>
+<Loc EndOffset="4119" SrcFileId="1" StartOffset="4110"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</HierarchyLvl>
+<HierarchyLvl HierarchyLvlId="878" HierarchyLvlTypeId="4" Intrnl_Id="103" Name="isLetterinCode">
+<Header>
+<Loc EndOffset="4581" SrcFileId="1" StartOffset="4541"/>
+</Header>
+<LocList>
+<Loc EndOffset="4805" SrcFileId="1" StartOffset="4541"/>
+</LocList>
+<StmntSeq Intrnl_Id="104">
+<LocList>
+<Loc EndOffset="4612" SrcFileId="1" StartOffset="4591"/>
+<Loc EndOffset="4785" SrcFileId="1" StartOffset="4657"/>
+<Loc EndOffset="4801" SrcFileId="1" StartOffset="4789"/>
+</LocList>
+<BasicStmnt CovItemId="S40" CovItemPrefix="SecretCode.java" Intrnl_Id="105">
+<LocList>
+<Loc EndOffset="4612" SrcFileId="1" StartOffset="4591"/>
+</LocList>
+</BasicStmnt>
+<LoopStmnt CovItemId="S41" CovItemPrefix="SecretCode.java" Intrnl_Id="106" MltplExecId="L4-2" MltplExecPrefix="SecretCode.java" NvrExecId="L4-0" NvrExecPrefix="SecretCode.java" OnceExecutedId="L4-1" OnceExecutedPrefix="SecretCode.java" OptBodyExec="true">
+<StmntSeq Intrnl_Id="107">
+<LocList>
+<Loc EndOffset="4779" SrcFileId="1" StartOffset="4697"/>
+</LocList>
+<CondStmnt CovItemId="S42" CovItemPrefix="SecretCode.java" Intrnl_Id="108">
+<Branch CovItemId="B11" CovItemPrefix="SecretCode.java" Implct="false" Intrnl_Id="109">
+<Cond/>
+<LocList>
+<Loc EndOffset="4749" SrcFileId="1" StartOffset="4712"/>
+</LocList>
+<StmntSeq Intrnl_Id="110">
+<LocList>
+<Loc EndOffset="4731" SrcFileId="1" StartOffset="4719"/>
+<Loc EndOffset="4743" SrcFileId="1" StartOffset="4737"/>
+</LocList>
+<BasicStmnt CovItemId="S43" CovItemPrefix="SecretCode.java" Intrnl_Id="111">
+<LocList>
+<Loc EndOffset="4731" SrcFileId="1" StartOffset="4719"/>
+</LocList>
+</BasicStmnt>
+<BasicStmnt CovItemId="S44" CovItemPrefix="SecretCode.java" Intrnl_Id="112">
+<LocList>
+<Loc EndOffset="4743" SrcFileId="1" StartOffset="4737"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</Branch>
+<Branch CovItemId="B12" CovItemPrefix="SecretCode.java" Implct="false" Intrnl_Id="113">
+<Cond>
+<Loc EndOffset="4753" SrcFileId="1" StartOffset="4749"/>
+</Cond>
+<LocList>
+<Loc EndOffset="4779" SrcFileId="1" StartOffset="4754"/>
+</LocList>
+<StmntSeq Intrnl_Id="114">
+<LocList>
+<Loc EndOffset="4773" SrcFileId="1" StartOffset="4761"/>
+</LocList>
+<BasicStmnt CovItemId="S45" CovItemPrefix="SecretCode.java" Intrnl_Id="115">
+<LocList>
+<Loc EndOffset="4773" SrcFileId="1" StartOffset="4761"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</Branch>
+<Keyword EndOffset="4699" SrcFileId="1" StartOffset="4697"/>
+<LocList>
+<Loc EndOffset="4779" SrcFileId="1" StartOffset="4697"/>
+</LocList>
+<RootTerm CovItemId="C10" CovItemPrefix="SecretCode.java" Intrnl_Id="116">
+<BasicBoolTerm Intrnl_Id="117">
+<LocList>
+<Loc EndOffset="4710" SrcFileId="1" StartOffset="4700"/>
+</LocList>
+</BasicBoolTerm>
+</RootTerm>
+</CondStmnt>
+</StmntSeq>
+<Keyword EndOffset="4660" SrcFileId="1" StartOffset="4657"/>
+<LocList>
+<Loc EndOffset="4785" SrcFileId="1" StartOffset="4657"/>
+</LocList>
+<RootTerm CovItemId="C9" CovItemPrefix="SecretCode.java" Intrnl_Id="118">
+<BasicBoolTerm Intrnl_Id="119">
+<LocList>
+<Loc EndOffset="4684" SrcFileId="1" StartOffset="4670"/>
+</LocList>
+</BasicBoolTerm>
+</RootTerm>
+</LoopStmnt>
+<BasicStmnt CovItemId="S46" CovItemPrefix="SecretCode.java" Intrnl_Id="120">
+<LocList>
+<Loc EndOffset="4801" SrcFileId="1" StartOffset="4789"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</HierarchyLvl>
+<HierarchyLvl HierarchyLvlId="879" HierarchyLvlTypeId="4" Intrnl_Id="121" Name="getPoints">
+<Header>
+<Loc EndOffset="4889" SrcFileId="1" StartOffset="4867"/>
+</Header>
+<LocList>
+<Loc EndOffset="4913" SrcFileId="1" StartOffset="4867"/>
+</LocList>
+<StmntSeq Intrnl_Id="122">
+<LocList>
+<Loc EndOffset="4909" SrcFileId="1" StartOffset="4895"/>
+</LocList>
+<BasicStmnt CovItemId="S47" CovItemPrefix="SecretCode.java" Intrnl_Id="123">
+<LocList>
+<Loc EndOffset="4909" SrcFileId="1" StartOffset="4895"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</HierarchyLvl>
+<HierarchyLvl HierarchyLvlId="880" HierarchyLvlTypeId="4" Intrnl_Id="124" Name="getResults">
+<Header>
+<Loc EndOffset="5089" SrcFileId="1" StartOffset="5061"/>
+</Header>
+<LocList>
+<Loc EndOffset="5296" SrcFileId="1" StartOffset="5061"/>
+</LocList>
+<StmntSeq Intrnl_Id="125">
+<LocList>
+<Loc EndOffset="5122" SrcFileId="1" StartOffset="5095"/>
+<Loc EndOffset="5279" SrcFileId="1" StartOffset="5155"/>
+<Loc EndOffset="5292" SrcFileId="1" StartOffset="5283"/>
+</LocList>
+<BasicStmnt CovItemId="S48" CovItemPrefix="SecretCode.java" Intrnl_Id="126">
+<LocList>
+<Loc EndOffset="5122" SrcFileId="1" StartOffset="5095"/>
+</LocList>
+</BasicStmnt>
+<LoopStmnt CovItemId="S49" CovItemPrefix="SecretCode.java" Intrnl_Id="127" MltplExecId="L5-2" MltplExecPrefix="SecretCode.java" NvrExecId="L5-0" NvrExecPrefix="SecretCode.java" OnceExecutedId="L5-1" OnceExecutedPrefix="SecretCode.java" OptBodyExec="true">
+<StmntSeq Intrnl_Id="128">
+<LocList>
+<Loc EndOffset="5274" SrcFileId="1" StartOffset="5182"/>
+</LocList>
+<CondStmnt CovItemId="S50" CovItemPrefix="SecretCode.java" Intrnl_Id="129">
+<Branch CovItemId="B13" CovItemPrefix="SecretCode.java" Implct="false" Intrnl_Id="130">
+<Cond/>
+<LocList>
+<Loc EndOffset="5211" SrcFileId="1" StartOffset="5200"/>
+</LocList>
+<StmntSeq Intrnl_Id="131">
+<LocList>
+<Loc EndOffset="5211" SrcFileId="1" StartOffset="5200"/>
+</LocList>
+<BasicStmnt CovItemId="S51" CovItemPrefix="SecretCode.java" Intrnl_Id="132">
+<LocList>
+<Loc EndOffset="5211" SrcFileId="1" StartOffset="5200"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</Branch>
+<Branch CovItemId="B14" CovItemPrefix="SecretCode.java" Implct="false" Intrnl_Id="133">
+<Cond>
+<Loc EndOffset="5220" SrcFileId="1" StartOffset="5216"/>
+</Cond>
+<LocList>
+<Loc EndOffset="5274" SrcFileId="1" StartOffset="5221"/>
+</LocList>
+<StmntSeq Intrnl_Id="134">
+<LocList>
+<Loc EndOffset="5274" SrcFileId="1" StartOffset="5221"/>
+</LocList>
+<CondStmnt CovItemId="S52" CovItemPrefix="SecretCode.java" Intrnl_Id="135">
+<Branch CovItemId="B15" CovItemPrefix="SecretCode.java" Implct="false" Intrnl_Id="136">
+<Cond/>
+<LocList>
+<Loc EndOffset="5252" SrcFileId="1" StartOffset="5239"/>
+</LocList>
+<StmntSeq Intrnl_Id="137">
+<LocList>
+<Loc EndOffset="5252" SrcFileId="1" StartOffset="5239"/>
+</LocList>
+<BasicStmnt CovItemId="S53" CovItemPrefix="SecretCode.java" Intrnl_Id="138">
+<LocList>
+<Loc EndOffset="5252" SrcFileId="1" StartOffset="5239"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</Branch>
+<Branch CovItemId="B16" CovItemPrefix="SecretCode.java" Implct="false" Intrnl_Id="139">
+<Cond>
+<Loc EndOffset="5261" SrcFileId="1" StartOffset="5257"/>
+</Cond>
+<LocList>
+<Loc EndOffset="5274" SrcFileId="1" StartOffset="5262"/>
+</LocList>
+<StmntSeq Intrnl_Id="140">
+<LocList>
+<Loc EndOffset="5274" SrcFileId="1" StartOffset="5262"/>
+</LocList>
+<BasicStmnt CovItemId="S54" CovItemPrefix="SecretCode.java" Intrnl_Id="141">
+<LocList>
+<Loc EndOffset="5274" SrcFileId="1" StartOffset="5262"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</Branch>
+<Keyword EndOffset="5223" SrcFileId="1" StartOffset="5221"/>
+<LocList>
+<Loc EndOffset="5274" SrcFileId="1" StartOffset="5221"/>
+</LocList>
+<RootTerm CovItemId="C13" CovItemPrefix="SecretCode.java" Intrnl_Id="142">
+<BasicBoolTerm Intrnl_Id="143">
+<LocList>
+<Loc EndOffset="5237" SrcFileId="1" StartOffset="5224"/>
+</LocList>
+</BasicBoolTerm>
+</RootTerm>
+</CondStmnt>
+</StmntSeq>
+</Branch>
+<Keyword EndOffset="5184" SrcFileId="1" StartOffset="5182"/>
+<LocList>
+<Loc EndOffset="5274" SrcFileId="1" StartOffset="5182"/>
+</LocList>
+<RootTerm CovItemId="C12" CovItemPrefix="SecretCode.java" Intrnl_Id="144">
+<BasicBoolTerm Intrnl_Id="145">
+<LocList>
+<Loc EndOffset="5198" SrcFileId="1" StartOffset="5185"/>
+</LocList>
+</BasicBoolTerm>
+</RootTerm>
+</CondStmnt>
+</StmntSeq>
+<Keyword EndOffset="5158" SrcFileId="1" StartOffset="5155"/>
+<LocList>
+<Loc EndOffset="5279" SrcFileId="1" StartOffset="5155"/>
+</LocList>
+<RootTerm CovItemId="C11" CovItemPrefix="SecretCode.java" Intrnl_Id="146">
+<BasicBoolTerm Intrnl_Id="147">
+<LocList>
+<Loc EndOffset="5170" SrcFileId="1" StartOffset="5167"/>
+</LocList>
+</BasicBoolTerm>
+</RootTerm>
+</LoopStmnt>
+<BasicStmnt CovItemId="S55" CovItemPrefix="SecretCode.java" Intrnl_Id="148">
+<LocList>
+<Loc EndOffset="5292" SrcFileId="1" StartOffset="5283"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</HierarchyLvl>
+</HierarchyLvl>
+</HierarchyLvl>
+</MASTRoot>
+</TestSessionContainer>

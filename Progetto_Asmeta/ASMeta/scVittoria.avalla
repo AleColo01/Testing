@@ -1,0 +1,75 @@
+scenario scVittoria
+
+load secretCode.asm
+
+exec
+	par
+		input_code(1) := GREEN
+	 	input_code(2) := WHITE
+		input_code(3) := RED
+	endpar
+;
+
+step
+
+check turn = 1;
+
+exec
+	par
+		input(1) := GREEN
+	 	input(2) := RED
+		input(3) := BLACK
+	endpar
+;
+
+
+step
+
+check outMess = SBAGLIATO;
+check turn = 2;
+check results(1) = HIT;
+check results(2) = CLOSE;
+check results(3) = MISS;
+
+check endGame = false;
+check points = 2;
+
+exec
+	par
+		input(1) := GREEN
+	 	input(2) := ORANGE
+		input(3) := RED
+	endpar
+;
+
+step
+
+check points = 8;
+check outMess = SBAGLIATO;
+check turn = 3;
+
+check results(1) = HIT;
+check results(2) = MISS;
+check results(3) = HIT;
+
+check endGame = false;
+
+exec
+	par
+		input(1) := GREEN
+	 	input(2) := WHITE
+		input(3) := RED
+	endpar
+;
+
+step
+
+check points = 32;
+check outMess = VITTORIA;
+check turn = 4;
+
+check results(1) = HIT;
+check results(2) = HIT;
+check results(3) = HIT;
+
+check endGame = true;

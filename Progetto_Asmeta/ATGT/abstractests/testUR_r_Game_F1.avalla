@@ -1,0 +1,20 @@
+scenario testUR_r_Game_F1
+
+load ./..\secretCode_3.asm
+
+//// test name test@UR_r_Game_F1
+//// generated for (test goal): UR_r_Game_F1: not(((results_1 = HIT) and (results_2 = HIT)) and (results_3 = HIT)) and (turno != GIOCO)
+check results_2 = MISS;
+check results_1 = MISS;
+check turno = INIZIO;
+check results_3 = MISS;
+check code_1 = WHITE;
+check code_2 = WHITE;
+check code_3 = WHITE;
+set input_1 := BLACK;
+set input_code1 := WHITE;
+set input_2 := BLACK;
+set input_code2 := WHITE;
+set input_code3 := WHITE;
+set input_3 := BLACK;
+step

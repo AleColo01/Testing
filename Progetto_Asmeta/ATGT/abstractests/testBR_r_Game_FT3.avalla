@@ -1,0 +1,23 @@
+scenario testBR_r_Game_FT3
+
+load ./..\secretCode_3.asm
+
+//// test name test@BR_r_Game_FT3
+//// generated for (test goal): BR_r_Game_FT3: not(((results_1 = HIT) and (results_2 = HIT)) and (results_3 = HIT)) and (input_2 = code_2)
+check results_2 = MISS;
+check results_1 = MISS;
+check turno = INIZIO;
+check results_3 = MISS;
+check code_1 = WHITE;
+check code_2 = WHITE;
+check code_3 = WHITE;
+set input_1 := BLACK;
+set input_code1 := WHITE;
+set input_2 := BLACK;
+set input_code2 := WHITE;
+set input_code3 := WHITE;
+set input_3 := BLACK;
+step
+check turno = GIOCO;
+set input_2 := WHITE;
+step

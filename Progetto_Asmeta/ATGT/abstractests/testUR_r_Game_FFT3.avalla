@@ -1,0 +1,28 @@
+scenario testUR_r_Game_FFT3
+
+load ./..\secretCode_3.asm
+
+//// test name test@UR_r_Game_FFT3
+//// generated for (test goal): UR_r_Game_FFT3: not(((results_1 = HIT) and (results_2 = HIT)) and (results_3 = HIT)) and (not(input_2 = code_2) and (((code_1 = input_2) or (code_3 = input_2)) and (results_2 != CLOSE)))
+check results_2 = MISS;
+check results_1 = MISS;
+check turno = INIZIO;
+check results_3 = MISS;
+check code_1 = WHITE;
+check code_2 = WHITE;
+check code_3 = GREEN;
+set input_1 := WHITE;
+set input_code1 := WHITE;
+set input_2 := WHITE;
+set input_code2 := WHITE;
+set input_code3 := GREEN;
+set input_3 := WHITE;
+step
+check results_2 = HIT;
+check results_1 = HIT;
+check turno = GIOCO;
+check results_3 = CLOSE;
+set input_1 := BLACK;
+set input_2 := GREEN;
+set input_3 := BLACK;
+step

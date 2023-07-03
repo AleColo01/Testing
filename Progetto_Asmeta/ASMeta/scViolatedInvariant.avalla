@@ -1,0 +1,42 @@
+scenario scViolatedInvariant
+
+load secretCode.asm
+
+//metto un invariant 'sbagliato' per controllare che il validatore se ne accorga
+invariant turns_limit: turn<10;
+
+check turn = 0;
+
+exec
+	par
+		input_code(1) := GREEN
+	 	input_code(2) := WHITE
+		input_code(3) := RED
+	endpar
+;
+step
+
+check turn = 1;
+
+exec
+	par
+		input(1) := RED
+	 	input(2) := GREEN
+		input(3) := RED
+	endpar
+;
+
+step until turn = 9;
+
+check turn = 9;
+
+check code(1) = GREEN;
+check code(2) = WHITE;
+check code(3) = RED;
+
+//qui non metto un'altra volta l'exec perchè le ho già fissate prima
+
+step
+
+check endGame = true;
+
