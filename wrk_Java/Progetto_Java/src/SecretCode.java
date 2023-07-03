@@ -92,7 +92,7 @@ public class SecretCode {
 		int i = 0;
 		//@ loop_invariant code[i]!=null;
 		for(i=0; i< code.length ;i++) {
-			if(code[i].equals(c[i])==false && previous[i]==true) {
+			if(code[i].equals(c[i])==false && previous[i]) {
 				flag = false;
 				break;
 			}else {
@@ -158,7 +158,7 @@ public class SecretCode {
 		int i = 0;
 		//@ loop_invariant code[i]!=null;
 		for(i=0; i< code.length ;i++) {
-			if(code[i]==l) {
+			if(code[i].equals(l)) {
 				flag = true;
 				break;
 			}else {

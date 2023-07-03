@@ -1,5 +1,3 @@
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 
 public class Main {
 
@@ -19,7 +17,7 @@ public class Main {
 		System.out.println("turno: " + sc.getTurno());
 		
 		for(int i=0; i<res.length; i++) {
-			System.out.println("result " + i + ": "+res[i]);	
+			System.out.println("result " + i + ": "+res[i] + " expected : " + r1[i]);	
 		}
 		
 		//Test Case 2
@@ -35,6 +33,7 @@ public class Main {
 		String[] s3 = new String[] {"AAA","B","C","D","E"};
 		//Violazione di un prerequisito (e invariante)
 		SecretCode sc3 = new SecretCode(s3);
+		System.out.println(sc3.endGame);
 
 	}
 
