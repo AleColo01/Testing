@@ -1,0 +1,50 @@
+scenario scenario.avalla
+
+load talkShowNUSMV.asm
+
+set input := UNO;
+
+step
+
+check moderatrice = PARLA;
+check persone(1) = ATTESA;
+check persone(2) = ASCOLTA;
+check persone(3) = ASCOLTA;
+
+set input := NESSUNO;
+
+step
+
+check moderatrice = ASCOLTA;
+check persone(1) = PARLA;
+check persone(2) = ASCOLTA;
+check persone(3) = ASCOLTA;
+check speaker = 5;
+
+set input := DUE;
+
+step
+
+check moderatrice = ASCOLTA;
+check persone(1) = PARLA;
+check persone(2) = ATTESA;
+check persone(3) = ASCOLTA;
+check speaker = 4;
+
+set input := NESSUNO;
+
+step until speaker = 0;
+
+check moderatrice = ASCOLTA;
+check persone(1) = PARLA;
+check persone(2) = ATTESA;
+check persone(3) = ASCOLTA;
+
+set input := NESSUNO;
+
+step
+
+check moderatrice = ASCOLTA;
+check persone(1) = ASCOLTA;
+check persone(2) = PARLA;
+check persone(3) = ASCOLTA;
