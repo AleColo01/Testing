@@ -22,6 +22,8 @@ signature:
 	static maxTempoAttesa : TempoAttesa
 	static maxTempoParla : TempoParla
 	
+	derived checkMic : Persone -> Boolean 
+	
 definitions:
 	domain Persone = {1:3}
 	domain TempoAttesa = {0:7} 
@@ -31,6 +33,13 @@ definitions:
 	function maxTempoAttesa = 7
 	
 	function maxTempoParla = 5
+	
+	function checkMic($p in Persone)=
+		if(microfono = $p xor persone($p)=PARLA) then
+			false
+		else
+			true
+		endif
 	
 	macro rule r_ScegliSpeaker = 
 		if (persone(1) = ATTESA or persone(2) = ATTESA or persone(3) = ATTESA) then
@@ -98,6 +107,8 @@ definitions:
 	CTLSPEC ag (persone(1) = PARLA implies microfono = 1)
 	CTLSPEC ag (persone(2) = PARLA implies microfono = 2)
 	CTLSPEC ag (persone(3) = PARLA implies microfono = 3)
+	//Stessa cosa usando la funzione checkMic
+	CTLSPEC (forall $p in Persone with ag(checkMic($p)))
 	//Sbagliata: può essere chi parla ha più tempo di 5
 	CTLSPEC ef (speaker > maxTempoParla)
 	

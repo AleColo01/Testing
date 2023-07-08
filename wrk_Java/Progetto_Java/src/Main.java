@@ -28,13 +28,15 @@ public class Main {
 		
 		//Test Case 3
 		String[] t3 = new String[] {"A","B","C","D","E"};
+		
 		System.out.println("codice " +sc.guessCode(t3));
 		
 		String[] s3 = new String[] {"AAA","B","C","D","E"};
 		//Violazione di un prerequisito (e invariante)
 		SecretCode sc3 = new SecretCode(s3);
-		System.out.println(sc3.endGame);
-
+		System.out.println("lunghezza AAA:" + s3[0].length());
+		System.out.println("errato:" + sc3.endGame);
+		
 	}
 
 }

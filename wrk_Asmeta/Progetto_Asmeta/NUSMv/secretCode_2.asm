@@ -132,13 +132,6 @@ definitions:
 		
 	endseq
 	
-	/* 
-	invariant over turn: turn<=10
-	invariant over turn: previous(1) = HIT implies results(1) = HIT
-	invariant over turn: previous(2) = HIT implies results(2) = HIT
-	invariant over turn: previous(3) = HIT implies results(3) = HIT
-	*/
-	
 	// Esiste uno stato in cui vinco
 	CTLSPEC ef(outMess = VITTORIA)
 	//esiste uno stato in cui il codice è sempre sbagliato fino alla fine del gioco

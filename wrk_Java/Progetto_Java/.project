@@ -23,7 +23,7 @@
 	</buildSpec>
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
-		<nature>org.jmlspecs.OpenJMLUI.JMLNatureID</nature>
 		<nature>org.eclipse.xtext.ui.shared.xtextNature</nature>
+		<nature>org.jmlspecs.OpenJMLUI.JMLNatureID</nature>
 	</natures>
 </projectDescription>
