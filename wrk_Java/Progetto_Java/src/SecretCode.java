@@ -43,9 +43,9 @@ public class SecretCode {
 	//@ requires isCodeValid(c);
 	// se ho indovinato il codice, ritorna vero, altrimenti, ritorna falso
 	//@ ensures (code==c && turn<10 && isCodeValid(c)) ==> \result;
-	//@ ensures !\result ==> (code!=c);
+	//@ ensures !\result <== (code!=c);
 	// se il turno è maggiore o uguale a 10 torna falso, ma se è falso non vuol dire che il turno sia >=10
-	//@ ensures (turn>=10) ==> !\result;
+	//@ ensures (turn>=10 && !endGame) ==> !\result;
 	// i punti vengono assegnati correttamente
 	//@ ensures ((turn <= 10) && isCodeValid(c) && (\old(endGame)==false) && c!=null ) ==> (points == (\old(points) + tempPoints));
 	//@ diverges true;
@@ -57,7 +57,8 @@ public class SecretCode {
 		if(turn < 10 && isCodeValid(c) && !endGame) {
 			
 			int i = 0;
-			//@ loop_invariant (i<5 ==> code[i]!=null);
+			// @ loop_invariant i>=0 && i<=5; 
+			// @ loop_invariant ((i>=0 && i<=5) ==> code[i]!=null);
 			for(i=0; i< code.length ;i++) {
 				if(code[i].equals(c[i])==false) {
 					end = false;
@@ -71,7 +72,7 @@ public class SecretCode {
 			tempPoints = guessPoints(c);
 			points += tempPoints;
 			turn++;
-			//@ assert turn <= 10;
+			// @ assert turn <= 10;
 		}
 	
 		return end;
@@ -90,7 +91,7 @@ public class SecretCode {
 		
 		boolean flag = false;
 		int i = 0;
-		//@ loop_invariant (i<5 ==> code[i]!=null);
+		//@ loop_invariant i>=0 && i<=5 && code[i]!=null;
 		for(i=0; i< code.length ;i++) {
 			if(code[i].equals(c[i])==false && previous[i]) {
 				flag = false;
@@ -120,7 +121,8 @@ public class SecretCode {
 		 */
 		int p = 0;
 		int i = 0;
-		//@ loop_invariant (i<5 ==> code[i]!=null);
+		//@ loop_invariant i>=0 && i<=5; 
+		//@ loop_invariant ((i>=0 && i<=5) ==> code[i]!=null);
 		for(i=0; i< code.length ;i++) {
 			if(code[i].equals(c[i])) {
 				previous[i] = true;
@@ -139,8 +141,9 @@ public class SecretCode {
 		return p;
 	}
 	
+
 	//puoi prendere solo una lettera come input
-	//@ requires l!=null && l.length() == 1 ;
+	//@ requires l!=null && (l!=null ==> (l.length() == 1)) ;
 	// se esiste una pezzo di codice uguale alla lettera, ritorna vero
 	//@ ensures  (\exists int x;  x>=0 && x<code.length; code[x].equals(l)) <==> \result;
 	// se non esiste una pezzo di codice uguale alla lettera, ritorna falso
@@ -156,7 +159,8 @@ public class SecretCode {
 		
 		boolean flag = false;
 		int i = 0;
-		//@ loop_invariant (i<5 ==> code[i]!=null);
+		//@ loop_invariant i>=0 && i<=5; 
+		//@ loop_invariant ((i>=0 && i<=5) ==> code[i]!=null);
 		for(i=0; i< code.length ;i++) {
 			if(code[i].equals(l)) {
 				flag = true;
@@ -182,11 +186,13 @@ public class SecretCode {
 	
 	// non lo posso lanciare prima del primo turno perchè non avrei nessuna risposta
 	//@ requires turn>=2;
+	//@ requires results.length == 5;
 	//@ ensures \result.length == 5;
 	public String[] getResults() {
 		String[] s = new String[5];
 		int i = 0;
 		//@ loop_writes i, s[*];
+		//@ loop_invariant i>=0 && i<=5 ;
 		for(i=0;i<5;i++) {
 			if(results[i]==1) s[i]="Hit";
 			else if(results[i]==0) s[i]="Close";
