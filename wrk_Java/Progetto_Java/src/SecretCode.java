@@ -57,8 +57,8 @@ public class SecretCode {
 		if(turn < 10 && isCodeValid(c) && !endGame) {
 			
 			int i = 0;
-			// @ loop_invariant i>=0 && i<=5; 
-			// @ loop_invariant ((i>=0 && i<=5) ==> code[i]!=null);
+			//@ loop_invariant i>=0 && i<=5; 
+			//@ loop_invariant ((i>=0 && i<5) ==> code[i]!=null);
 			for(i=0; i< code.length ;i++) {
 				if(code[i].equals(c[i])==false) {
 					end = false;
@@ -72,7 +72,7 @@ public class SecretCode {
 			tempPoints = guessPoints(c);
 			points += tempPoints;
 			turn++;
-			// @ assert turn <= 10;
+			//@ assert turn <= 10;
 		}
 	
 		return end;
@@ -91,7 +91,8 @@ public class SecretCode {
 		
 		boolean flag = false;
 		int i = 0;
-		//@ loop_invariant i>=0 && i<=5 && code[i]!=null;
+		//@ loop_invariant i>=0 && i<=5; 
+		//@ loop_invariant ((i>=0 && i<5) ==> code[i]!=null);
 		for(i=0; i< code.length ;i++) {
 			if(code[i].equals(c[i])==false && previous[i]) {
 				flag = false;
@@ -122,7 +123,7 @@ public class SecretCode {
 		int p = 0;
 		int i = 0;
 		//@ loop_invariant i>=0 && i<=5; 
-		//@ loop_invariant ((i>=0 && i<=5) ==> code[i]!=null);
+		//@ loop_invariant ((i>=0 && i<5) ==> code[i]!=null);
 		for(i=0; i< code.length ;i++) {
 			if(code[i].equals(c[i])) {
 				previous[i] = true;
@@ -160,7 +161,7 @@ public class SecretCode {
 		boolean flag = false;
 		int i = 0;
 		//@ loop_invariant i>=0 && i<=5; 
-		//@ loop_invariant ((i>=0 && i<=5) ==> code[i]!=null);
+		//@ loop_invariant ((i>=0 && i<5) ==> code[i]!=null);
 		for(i=0; i< code.length ;i++) {
 			if(code[i].equals(l)) {
 				flag = true;
