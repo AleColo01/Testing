@@ -53,7 +53,7 @@ public class SecretCode {
 		
 		boolean end = endGame;
 		// se ho già indovinato non serve che ricontrollo visto che gli slot giusti si ripetono
-		//se non sono trascorsi 10 turni e sto rispettando le regole
+		//se non sono trascorsi 10 turni e sto rispettando le regole controllo
 		if(turn < 10 && isCodeValid(c) && !endGame) {
 			
 			int i = 0;
@@ -144,7 +144,8 @@ public class SecretCode {
 	
 
 	//puoi prendere solo una lettera come input
-	//@ requires l!=null && (l!=null ==> (l.length() == 1)) ;
+	//@ requires l!=null; 
+	//@ requires (l!=null ==> (l.length() == 1)) ;
 	// se esiste una pezzo di codice uguale alla lettera, ritorna vero
 	//@ ensures  (\exists int x;  x>=0 && x<code.length; code[x].equals(l)) <==> \result;
 	// se non esiste una pezzo di codice uguale alla lettera, ritorna falso

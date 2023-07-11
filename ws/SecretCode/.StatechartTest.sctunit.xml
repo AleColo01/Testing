@@ -1,0 +1,8 @@
+<testsuite name="StatechartTest" time="">
+  <testcase name="testWin" classname="platform:/resource/SecretCode/StatechartTest.sctunit#StatechartTest.testWin" time="">
+  </testcase>
+  <testcase name="testAlarm" classname="platform:/resource/SecretCode/StatechartTest.sctunit#StatechartTest.testAlarm" time="">
+  </testcase>
+  <testcase name="testLose" classname="platform:/resource/SecretCode/StatechartTest.sctunit#StatechartTest.testLose" time="">
+  </testcase>
+</testsuite>

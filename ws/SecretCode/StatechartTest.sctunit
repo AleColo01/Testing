@@ -1,0 +1,68 @@
+testclass StatechartTest for statechart Statechart {
+	
+	@Test
+	operation testWin() {
+		enter
+		assert active(main_region.Gioco)
+		raise newCode
+		assert active(main_region.checkCode)
+		raise rightCode
+		assert active(main_region.Win)
+		exit
+	}
+	
+	@Test
+	operation testAlarm() {
+		enter
+		assert active(main_region.Gioco)
+		raise newCode
+		assert active(main_region.checkCode)
+		raise invalidCode
+		assert active(main_region.Alarm)
+		exit
+	}
+	
+	@Test
+	operation testLose() {
+		enter
+		assert active(main_region.Gioco)
+		raise newCode
+		assert active(main_region.checkCode)
+		raise wrongCode
+		assert active(main_region.Gioco)
+		assert turno == 2
+		
+		raise newCode
+		raise wrongCode
+		
+		raise newCode
+		raise wrongCode
+		
+		raise newCode
+		raise wrongCode
+		
+		raise newCode
+		raise wrongCode
+		
+		raise newCode
+		raise wrongCode
+		
+		raise newCode
+		raise wrongCode
+		
+		raise newCode
+		raise wrongCode
+		
+		raise newCode
+		raise wrongCode
+		
+		assert turno == 10
+		
+		raise newCode
+		raise wrongCode
+		
+		assert active(main_region.Lose)
+		
+		exit
+	}
+}

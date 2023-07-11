@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="com.yakindu.sctunit.simulation.core.launch">
+    <stringAttribute key="filename" value="/SecretCode/StatechartTest2.sctunit"/>
+</launchConfiguration>

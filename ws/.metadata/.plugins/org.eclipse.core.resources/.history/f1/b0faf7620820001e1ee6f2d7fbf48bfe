@@ -1,0 +1,14 @@
+testclass StatechartTest3 for statechart Statechart {
+	
+	@Test
+	operation test() {
+		enter
+		assert active(main_region.Gioco)
+		raise newCode
+		assert active(main_region.checkCode)
+		raise wrongCode
+		assert active(main_region.Gioco)
+		assert turno == 2
+		exit
+	}
+}
