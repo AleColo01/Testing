@@ -2,7 +2,7 @@ scenario scViolatedInvariant
 
 load secretCode.asm
 
-//metto un invariant 'sbagliato' per controllare che il validatore se ne accorga
+//violo un invariant per controllare che il validatore se ne accorga
 invariant turns_limit: turn<10;
 
 check turn = 0;
